@@ -13,7 +13,7 @@ import {
 import { ExpenseFilters, type Filters } from '@/components/expenses/expense-filters';
 import { ExpenseTable } from '@/components/expenses/expense-table';
 import { ExpenseForm } from '@/components/expenses/expense-form';
-import type { Expense } from '@/types';
+import type { Expense, Sort, SortBy } from '@/types';
 
 const currentMonth = () => {
   const now = new Date();
@@ -26,6 +26,7 @@ export default function ExpensesPage() {
     categoryId: 'all',
     sourceId: 'all',
   });
+  const [sort, setSort] = useState<Sort>({ by: 'date', dir: 'asc' });
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -37,6 +38,8 @@ export default function ExpensesPage() {
     if (filters.month !== 'all') params.set('month', filters.month);
     if (filters.categoryId !== 'all') params.set('categoryId', filters.categoryId);
     if (filters.sourceId !== 'all') params.set('sourceId', filters.sourceId);
+    params.set('sortBy', sort.by);
+    params.set('sortDir', sort.dir);
     params.set('limit', '100');
 
     const res = await fetch(`/api/expenses?${params}`);
@@ -44,15 +47,25 @@ export default function ExpensesPage() {
     setExpenses(json.data ?? []);
     setTotal(json.total ?? 0);
     setLoading(false);
-  }, [filters]);
+  }, [filters, sort]);
 
   useEffect(() => { load(); }, [load]);
+
+  function handleSort(by: SortBy) {
+    setSort((prev) =>
+      prev.by === by
+        ? { by, dir: prev.dir === 'asc' ? 'desc' : 'asc' }
+        : { by, dir: 'asc' }
+    );
+  }
 
   function handleExport() {
     const params = new URLSearchParams();
     if (filters.month !== 'all') params.set('month', filters.month);
     if (filters.categoryId !== 'all') params.set('categoryId', filters.categoryId);
     if (filters.sourceId !== 'all') params.set('sourceId', filters.sourceId);
+    params.set('sortBy', sort.by);
+    params.set('sortDir', sort.dir);
     window.location.href = `/api/expenses/export?${params}`;
   }
 
@@ -100,7 +113,13 @@ export default function ExpensesPage() {
       <ExpenseFilters filters={filters} onChange={setFilters} />
 
       {/* List */}
-      <ExpenseTable expenses={expenses} loading={loading} onRefresh={load} />
+      <ExpenseTable
+        expenses={expenses}
+        loading={loading}
+        onRefresh={load}
+        sort={sort}
+        onSort={handleSort}
+      />
     </div>
   );
 }

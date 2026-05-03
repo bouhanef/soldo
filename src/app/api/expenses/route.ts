@@ -24,6 +24,8 @@ export async function GET(req: Request) {
     const sourceId = searchParams.get('sourceId');
     const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '20')));
+    const sortBy = searchParams.get('sortBy') === 'amount' ? 'amount' : 'date';
+    const sortDir = searchParams.get('sortDir') === 'desc' ? -1 : 1;
 
     await dbConnect();
 
@@ -42,7 +44,7 @@ export async function GET(req: Request) {
     const total = await Expense.countDocuments(filter);
     const data = await Expense.find(filter)
       .populate('categoryId sourceId')
-      .sort({ date: -1, createdAt: -1 })
+      .sort({ [sortBy]: sortDir, createdAt: sortDir })
       .skip((page - 1) * limit)
       .limit(limit);
 

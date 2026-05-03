@@ -21,6 +21,10 @@ export interface Expense {
   createdAt: string;
 }
 
+export type SortBy = 'date' | 'amount';
+export type SortDir = 'asc' | 'desc';
+export interface Sort { by: SortBy; dir: SortDir }
+
 export interface MonthlyTotal {
   month: string; // YYYY-MM
   total: number;
