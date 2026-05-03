@@ -131,7 +131,7 @@ export function ExpenseForm({ expense, onSaved, onCancel }: Props) {
       {/* Category */}
       <div className="space-y-1.5">
         <Label>Category</Label>
-        <Select value={categoryId} onValueChange={setCategoryId}>
+        <Select value={categoryId} onValueChange={(v) => setCategoryId(v ?? '')}>
           <SelectTrigger className="w-full">
             {(() => {
               const cat = categories.find((c) => c._id === categoryId);
@@ -164,7 +164,7 @@ export function ExpenseForm({ expense, onSaved, onCancel }: Props) {
       {/* Source */}
       <div className="space-y-1.5">
         <Label>Source</Label>
-        <Select value={sourceId} onValueChange={setSourceId}>
+        <Select value={sourceId} onValueChange={(v) => setSourceId(v ?? '')}>
           <SelectTrigger className="w-full">
             {(() => {
               const src = sources.find((s) => s._id === sourceId);

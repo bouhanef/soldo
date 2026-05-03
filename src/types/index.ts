@@ -42,6 +42,7 @@ export interface SourceStat {
 export interface Stats {
   year: number;
   totalYear: number;
+  count: number;
   monthlyTotals: MonthlyTotal[];
   byCategory: CategoryStat[];
   bySource: SourceStat[];

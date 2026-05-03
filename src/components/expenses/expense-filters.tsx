@@ -52,7 +52,7 @@ export function ExpenseFilters({ filters, onChange }: Props) {
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       <Select
         value={filters.month}
-        onValueChange={(v) => onChange({ ...filters, month: v })}
+        onValueChange={(v) => onChange({ ...filters, month: v ?? 'all' })}
       >
         <SelectTrigger>
           {(() => {
@@ -76,7 +76,7 @@ export function ExpenseFilters({ filters, onChange }: Props) {
 
       <Select
         value={filters.categoryId}
-        onValueChange={(v) => onChange({ ...filters, categoryId: v })}
+        onValueChange={(v) => onChange({ ...filters, categoryId: v ?? 'all' })}
       >
         <SelectTrigger>
           {(() => {
@@ -109,7 +109,7 @@ export function ExpenseFilters({ filters, onChange }: Props) {
 
       <Select
         value={filters.sourceId}
-        onValueChange={(v) => onChange({ ...filters, sourceId: v })}
+        onValueChange={(v) => onChange({ ...filters, sourceId: v ?? 'all' })}
       >
         <SelectTrigger>
           {(() => {

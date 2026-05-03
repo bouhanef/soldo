@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/db';
+import { dbConnect } from '@/lib/db';
 import Expense from '@/lib/models/expense';
 
 export async function GET(req: NextRequest) {
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   const end = new Date(Date.UTC(year + 1, 0, 1));
   const matchStage = { $match: { date: { $gte: start, $lt: end } } };
 
-  const [monthlyRaw, byCategoryRaw, bySourceRaw] = await Promise.all([
+  const [monthlyRaw, byCategoryRaw, bySourceRaw, countRaw] = await Promise.all([
     Expense.aggregate([
       matchStage,
       {
@@ -74,6 +74,8 @@ export async function GET(req: NextRequest) {
       },
       { $sort: { total: -1 } },
     ]),
+
+    Expense.aggregate([matchStage, { $count: 'total' }]),
   ]);
 
   // Fill all 12 months so the chart always has a full year
@@ -87,11 +89,13 @@ export async function GET(req: NextRequest) {
   });
 
   const totalYear = monthlyTotals.reduce((sum, m) => sum + m.total, 0);
+  const count: number = countRaw[0]?.total ?? 0;
 
   return NextResponse.json({
     data: {
       year,
       totalYear,
+      count,
       monthlyTotals,
       byCategory: byCategoryRaw,
       bySource: bySourceRaw,
