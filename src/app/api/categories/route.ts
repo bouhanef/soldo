@@ -13,7 +13,8 @@ export async function GET() {
     await dbConnect();
     const data = await Category.find().sort({ name: 1 });
     return NextResponse.json({ data });
-  } catch {
+  } catch (err) {
+    console.error('[GET /api/categories]', err);
     return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
   }
 }
