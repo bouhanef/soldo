@@ -24,7 +24,10 @@ export async function PATCH(req: Request, { params }: Params) {
 
     await dbConnect();
     const update = { ...parsed.data } as Record<string, unknown>;
-    if (parsed.data.date) update.date = new Date(parsed.data.date);
+    if (parsed.data.date) {
+      const d = new Date(parsed.data.date);
+      update.date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    }
 
     const data = await Expense.findByIdAndUpdate(id, update, { new: true }).populate(
       'categoryId sourceId'

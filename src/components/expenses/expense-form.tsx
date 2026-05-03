@@ -61,7 +61,7 @@ export function ExpenseForm({ expense, onSaved, onCancel }: Props) {
 
     setSaving(true);
     const body = {
-      date: date.toISOString(),
+      date: new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString(),
       categoryId,
       sourceId,
       amount: parsed,

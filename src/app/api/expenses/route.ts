@@ -3,6 +3,11 @@ import { z } from 'zod';
 import { dbConnect } from '@/lib/db';
 import Expense from '@/lib/models/expense';
 
+function toDateOnly(iso: string): Date {
+  const d = new Date(iso);
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+}
+
 const CreateSchema = z.object({
   date: z.string().min(1),
   categoryId: z.string().min(1),
@@ -27,8 +32,8 @@ export async function GET(req: Request) {
     if (month) {
       const [year, mon] = month.split('-').map(Number);
       filter.date = {
-        $gte: new Date(year, mon - 1, 1),
-        $lt: new Date(year, mon, 1),
+        $gte: new Date(Date.UTC(year, mon - 1, 1)),
+        $lt: new Date(Date.UTC(year, mon, 1)),
       };
     }
     if (categoryId) filter.categoryId = categoryId;
@@ -59,7 +64,7 @@ export async function POST(req: Request) {
     await dbConnect();
     const expense = await Expense.create({
       ...parsed.data,
-      date: new Date(parsed.data.date),
+      date: toDateOnly(parsed.data.date),
     });
     const data = await expense.populate('categoryId sourceId');
     return NextResponse.json({ data }, { status: 201 });
