@@ -6,7 +6,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from '@/components/ui/select';
 import type { Category, Source } from '@/types';
 
@@ -56,7 +55,14 @@ export function ExpenseFilters({ filters, onChange }: Props) {
         onValueChange={(v) => onChange({ ...filters, month: v })}
       >
         <SelectTrigger>
-          <SelectValue placeholder="All months" />
+          {(() => {
+            const m = months.find((o) => o.value === filters.month);
+            return m ? (
+              <span>{m.label}</span>
+            ) : (
+              <span className="text-zinc-400">All months</span>
+            );
+          })()}
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All months</SelectItem>
@@ -73,7 +79,17 @@ export function ExpenseFilters({ filters, onChange }: Props) {
         onValueChange={(v) => onChange({ ...filters, categoryId: v })}
       >
         <SelectTrigger>
-          <SelectValue placeholder="All categories" />
+          {(() => {
+            const cat = categories.find((c) => c._id === filters.categoryId);
+            return cat ? (
+              <span className="flex items-center gap-2 truncate">
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                <span className="truncate">{cat.name}</span>
+              </span>
+            ) : (
+              <span className="text-zinc-400">All categories</span>
+            );
+          })()}
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All categories</SelectItem>
@@ -96,7 +112,14 @@ export function ExpenseFilters({ filters, onChange }: Props) {
         onValueChange={(v) => onChange({ ...filters, sourceId: v })}
       >
         <SelectTrigger>
-          <SelectValue placeholder="All sources" />
+          {(() => {
+            const src = sources.find((s) => s._id === filters.sourceId);
+            return src ? (
+              <span className="truncate">{src.name}</span>
+            ) : (
+              <span className="text-zinc-400">All sources</span>
+            );
+          })()}
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All sources</SelectItem>

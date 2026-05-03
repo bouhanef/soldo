@@ -15,7 +15,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from '@/components/ui/select';
 import type { Category, Source, Expense } from '@/types';
 
@@ -93,17 +92,16 @@ export function ExpenseForm({ expense, onSaved, onCancel }: Props) {
       <div className="space-y-1.5">
         <Label>Date</Label>
         <Popover open={calOpen} onOpenChange={setCalOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                'w-full justify-start text-left font-normal',
-                !date && 'text-zinc-400'
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-              {date ? format(date, 'PPP') : 'Pick a date'}
-            </Button>
+          <PopoverTrigger
+            render={
+              <Button
+                variant="outline"
+                className={cn('w-full justify-start text-left font-normal', !date && 'text-zinc-400')}
+              />
+            }
+          >
+            <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+            {date ? format(date, 'PPP') : 'Pick a date'}
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
@@ -135,7 +133,17 @@ export function ExpenseForm({ expense, onSaved, onCancel }: Props) {
         <Label>Category</Label>
         <Select value={categoryId} onValueChange={setCategoryId}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a category" />
+            {(() => {
+              const cat = categories.find((c) => c._id === categoryId);
+              return cat ? (
+                <span className="flex items-center gap-2 truncate">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
+                  <span className="truncate">{cat.name}</span>
+                </span>
+              ) : (
+                <span className="text-zinc-400">Select a category</span>
+              );
+            })()}
           </SelectTrigger>
           <SelectContent>
             {categories.map((cat) => (
@@ -158,7 +166,14 @@ export function ExpenseForm({ expense, onSaved, onCancel }: Props) {
         <Label>Source</Label>
         <Select value={sourceId} onValueChange={setSourceId}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a source" />
+            {(() => {
+              const src = sources.find((s) => s._id === sourceId);
+              return src ? (
+                <span className="truncate">{src.name}</span>
+              ) : (
+                <span className="text-zinc-400">Select a source</span>
+              );
+            })()}
           </SelectTrigger>
           <SelectContent>
             {sources.map((src) => (

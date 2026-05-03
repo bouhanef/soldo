@@ -77,20 +77,20 @@ export default function ExpensesPage() {
             <span className="hidden sm:inline">Export</span>
           </Button>
           <Sheet open={addOpen} onOpenChange={setAddOpen}>
-            <SheetTrigger asChild>
-              <Button size="sm">
-                <Plus className="w-4 h-4 sm:mr-1.5" />
-                <span className="hidden sm:inline">Add expense</span>
-              </Button>
+            <SheetTrigger render={<Button size="sm" />}>
+              <Plus className="w-4 h-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Add expense</span>
             </SheetTrigger>
             <SheetContent side="bottom" className="rounded-t-2xl max-h-[90dvh] overflow-y-auto">
               <SheetHeader className="mb-4">
                 <SheetTitle>Add expense</SheetTitle>
               </SheetHeader>
-              <ExpenseForm
-                onSaved={() => { setAddOpen(false); load(); }}
-                onCancel={() => setAddOpen(false)}
-              />
+              <div className="px-4 pb-4">
+                <ExpenseForm
+                  onSaved={() => { setAddOpen(false); load(); }}
+                  onCancel={() => setAddOpen(false)}
+                />
+              </div>
             </SheetContent>
           </Sheet>
         </div>

@@ -167,11 +167,13 @@ export function ExpenseTable({ expenses, loading, onRefresh }: Props) {
             <SheetTitle>Edit expense</SheetTitle>
           </SheetHeader>
           {editTarget && (
-            <ExpenseForm
-              expense={editTarget}
-              onSaved={() => { setEditTarget(null); onRefresh(); }}
-              onCancel={() => setEditTarget(null)}
-            />
+            <div className="px-4 pb-4">
+              <ExpenseForm
+                expense={editTarget}
+                onSaved={() => { setEditTarget(null); onRefresh(); }}
+                onCancel={() => setEditTarget(null)}
+              />
+            </div>
           )}
         </SheetContent>
       </Sheet>
