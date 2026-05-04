@@ -30,23 +30,31 @@ export default function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const params = new URLSearchParams();
-    if (filters.month !== 'all') params.set('month', filters.month);
-    if (filters.categoryId !== 'all') params.set('categoryId', filters.categoryId);
-    if (filters.sourceId !== 'all') params.set('sourceId', filters.sourceId);
-    params.set('sortBy', sort.by);
-    params.set('sortDir', sort.dir);
-    params.set('limit', '100');
+    setFetchError(false);
+    try {
+      const params = new URLSearchParams();
+      if (filters.month !== 'all') params.set('month', filters.month);
+      if (filters.categoryId !== 'all') params.set('categoryId', filters.categoryId);
+      if (filters.sourceId !== 'all') params.set('sourceId', filters.sourceId);
+      params.set('sortBy', sort.by);
+      params.set('sortDir', sort.dir);
+      params.set('limit', '100');
 
-    const res = await fetch(`/api/expenses?${params}`);
-    const json = await res.json();
-    setExpenses(json.data ?? []);
-    setTotal(json.total ?? 0);
-    setLoading(false);
+      const res = await fetch(`/api/expenses?${params}`);
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      setExpenses(json.data ?? []);
+      setTotal(json.total ?? 0);
+    } catch {
+      setFetchError(true);
+    } finally {
+      setLoading(false);
+    }
   }, [filters, sort]);
 
   useEffect(() => { load(); }, [load]);
@@ -111,6 +119,12 @@ export default function ExpensesPage() {
 
       {/* Filters */}
       <ExpenseFilters filters={filters} onChange={setFilters} />
+
+      {fetchError && (
+        <p className="text-sm text-zinc-400 py-8 text-center">
+          Failed to load expenses. Check your connection and try again.
+        </p>
+      )}
 
       {/* List */}
       <ExpenseTable

@@ -30,10 +30,16 @@ export function SourcesTab() {
 
   async function load() {
     setLoading(true);
-    const res = await fetch('/api/sources');
-    const json = await res.json();
-    setSources(json.data ?? []);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/sources');
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      setSources(json.data ?? []);
+    } catch {
+      toast.error('Failed to load sources');
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);

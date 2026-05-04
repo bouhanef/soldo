@@ -21,16 +21,20 @@ export default function DashboardPage() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     setStats(null);
+    setFetchError(false);
     fetch(`/api/stats?year=${year}`)
-      .then((r) => r.json())
-      .then((json) => {
-        setStats(json.data ?? null);
-        setLoading(false);
-      });
+      .then((r) => {
+        if (!r.ok) throw new Error();
+        return r.json();
+      })
+      .then((json) => { setStats(json.data ?? null); })
+      .catch(() => { setFetchError(true); })
+      .finally(() => { setLoading(false); });
   }, [year]);
 
   const years = yearOptions();
@@ -56,6 +60,12 @@ export default function DashboardPage() {
           </SelectContent>
         </Select>
       </div>
+
+      {fetchError && (
+        <p className="text-sm text-zinc-400 py-8 text-center">
+          Failed to load stats. Check your connection and try again.
+        </p>
+      )}
 
       {/* Stat cards */}
       <StatCards stats={stats} loading={loading} />

@@ -32,10 +32,16 @@ export function CategoriesTab() {
 
   async function load() {
     setLoading(true);
-    const res = await fetch('/api/categories');
-    const json = await res.json();
-    setCategories(json.data ?? []);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/categories');
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      setCategories(json.data ?? []);
+    } catch {
+      toast.error('Failed to load categories');
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { load(); }, []);

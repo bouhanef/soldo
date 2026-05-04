@@ -42,10 +42,14 @@ export function ExpenseForm({ expense, onSaved, onCancel }: Props) {
     Promise.all([
       fetch('/api/categories').then((r) => r.json()),
       fetch('/api/sources').then((r) => r.json()),
-    ]).then(([cats, srcs]) => {
-      setCategories((cats.data ?? []).filter((c: Category) => c.isActive));
-      setSources((srcs.data ?? []).filter((s: Source) => s.isActive));
-    });
+    ])
+      .then(([cats, srcs]) => {
+        setCategories((cats.data ?? []).filter((c: Category) => c.isActive));
+        setSources((srcs.data ?? []).filter((s: Source) => s.isActive));
+      })
+      .catch(() => {
+        toast.error('Failed to load form data');
+      });
   }, []);
 
   async function handleSubmit() {
