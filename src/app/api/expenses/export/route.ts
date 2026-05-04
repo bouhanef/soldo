@@ -19,12 +19,15 @@ export async function GET(req: Request) {
 
     await dbConnect();
 
+    const sortBy = searchParams.get('sortBy') === 'amount' ? 'amount' : 'date';
+    const sortDir = searchParams.get('sortDir') === 'desc' ? -1 : 1;
+
     const filter: Record<string, unknown> = {};
     if (month) {
       const [year, mon] = month.split('-').map(Number);
       filter.date = {
-        $gte: new Date(year, mon - 1, 1),
-        $lt: new Date(year, mon, 1),
+        $gte: new Date(Date.UTC(year, mon - 1, 1)),
+        $lt: new Date(Date.UTC(year, mon, 1)),
       };
     }
     if (categoryId) filter.categoryId = categoryId;
@@ -32,7 +35,7 @@ export async function GET(req: Request) {
 
     const expenses = (await Expense.find(filter)
       .populate('categoryId sourceId')
-      .sort({ date: -1 })) as unknown as PopulatedExpense[];
+      .sort({ [sortBy]: sortDir, createdAt: sortDir })) as unknown as PopulatedExpense[];
 
     const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' });
 
